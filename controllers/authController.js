@@ -7,14 +7,6 @@ require("dotenv").config();
 const signup = async (req, res) => {
     const {email, password, name} = req.body;
 
-    if (!email) {
-        return res.status(400).json({ message: "Email is required" });
-    }
-
-    if (!password) {
-        return res.status(400).json({ message: 'Password is required' });
-    }
-
     try {
         const existingUser = await User.findUnique({ where: { email } });
         
@@ -46,14 +38,6 @@ const signup = async (req, res) => {
 
 const login = async (req, res) => {
     const { email, password } = req.body;
-
-    if (!email) {
-        return res.status(400).json({ message: "Email is required" });
-    }
-
-    if (!password) {
-        return res.status(400).json({ message: 'Password is required' });
-    }
 
     try {
         const user = await User.findUnique({
