@@ -1,5 +1,13 @@
-const getTodos = (req, res) => {
-    res.send("all todos")
+const Todo = require("../models/PrismaClient").todo;
+
+const getTodos = async (req, res) => {
+    try {
+        const todos = await Todo.findMany();
+
+        res.status(200).json({todos});
+    } catch (error) {
+        res.status(500).json({message: "Internal Server Error"});
+    };
 };
 
 const getTodo = (req, res) => {
