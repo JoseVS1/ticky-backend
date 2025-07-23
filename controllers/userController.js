@@ -6,15 +6,18 @@ const getUsers = async (req, res) => {
             select: {
                 id: true,
                 email: true,
-                name: true
+                name: true,
+                todos: true,
+                tags: true
             }
         });
 
         res.status(200).json({ users });
     } catch (error) {
+        console.error(error);
         res.status(500).json({ message: "Internal Server Error" });
     }
-}
+};
 
 const getUser = async (req, res) => {
     const id = Number(req.params.id);
@@ -33,17 +36,18 @@ const getUser = async (req, res) => {
 
         if (!user) {
             return res.status(404).json({ message: "User not found" });
-        };
+        }
 
-        res.status(200).json({ user })
+        res.status(200).json({ user });
     } catch (error) {
-        console.log(error)
+        console.error(error);
         res.status(500).json({ message: "Internal Server Error" });
     }
 };
 
 const deleteUser = async (req, res) => {
     const id = Number(req.params.id);
+
     try {
         const user = await User.findUnique({
             where: {
@@ -53,7 +57,7 @@ const deleteUser = async (req, res) => {
 
         if (!user) {
             return res.status(404).json({ message: "User not found" });
-        };
+        }
 
         const deletedUser = await User.delete({
             where: {
@@ -63,9 +67,10 @@ const deleteUser = async (req, res) => {
 
         res.status(200).json({ message: "User deleted successfully", user: deletedUser });
     } catch (error) {
+        console.error(error);
         res.status(500).json({ message: "Internal Server Error" });
     }
-}
+};
 
 module.exports = {
     getUsers,
