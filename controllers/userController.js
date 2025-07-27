@@ -15,7 +15,7 @@ const getUsers = async (req, res) => {
         res.status(200).json({ users });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: "Internal Server Error" });
+        res.status(500).json({ errors: [{ message: "Internal Server Error" }] });
     }
 };
 
@@ -35,13 +35,13 @@ const getUser = async (req, res) => {
         });
 
         if (!user) {
-            return res.status(404).json({ message: "User not found" });
+            return res.status(404).json({ errors: [{ message: "User not found" }] });
         }
 
         res.status(200).json({ user });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: "Internal Server Error" });
+        res.status(500).json({ errors: [{ message: "Internal Server Error" }] });
     }
 };
 
@@ -56,7 +56,7 @@ const deleteUser = async (req, res) => {
         });
 
         if (!user) {
-            return res.status(404).json({ message: "User not found" });
+            return res.status(404).json({ errors: [{ message: "User not found" }] });
         }
 
         const deletedUser = await User.delete({
@@ -68,7 +68,7 @@ const deleteUser = async (req, res) => {
         res.status(200).json({ message: "User deleted successfully", user: deletedUser });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: "Internal Server Error" });
+        res.status(500).json({ errors: [{ message: "Internal Server Error" }] });
     }
 };
 

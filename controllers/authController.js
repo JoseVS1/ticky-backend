@@ -11,7 +11,7 @@ const signup = async (req, res) => {
         const existingUser = await User.findUnique({ where: { email } });
         
         if (existingUser) {
-            return res.status(409).json({ message: "User already exists" });
+            return res.status(409).json({ errors: [{ message: "User already exists" }] });
         }
 
         const hashed = await bcrypt.hash(password, 10);
@@ -32,7 +32,7 @@ const signup = async (req, res) => {
         res.status(201).json({ message: "User registered", token, user: { id: user.id, email: user.email, name: user.name, todos: user.todos, tags: user.tags } });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: "Internal Server Error" });
+        res.status(500).json({ errors: [{ message: "Internal Server Error" }] });
     }
 };
 
@@ -51,13 +51,13 @@ const login = async (req, res) => {
         });
 
         if (!user) {
-            return res.status(401).json({ message: "Invalid credentials" });
+            return res.status(401).json({ errors: [{ message: "Invalid credentials" }] });
         }
 
         const isValid = await bcrypt.compare(password, user.passwordHash);
 
         if (!isValid) {
-            return res.status(401).json({ message: "Invalid credentials" });
+            return res.status(401).json({ errors: [{ message: "Invalid credentials" }]});
         }
 
         const token = jwt.sign({ userId: user.id }, process.env.SECRET, { expiresIn: "1h" });
@@ -65,7 +65,7 @@ const login = async (req, res) => {
         res.json({ token, user: { id: user.id, email: user.email, name: user.name, todos: user.todos, tags: user.tags }});
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: "Internal Server Error" });
+        res.status(500).json({ errors: [{ message: "Internal Server Error" }] });
     }
 };
 
