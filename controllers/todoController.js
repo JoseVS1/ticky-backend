@@ -122,7 +122,7 @@ const updateTodo = async (req, res) => {
                 id
             },
             data: {
-                ...(title && { title }),
+                title,
                 ...(description && { description }),
                 status,
                 ...(tagsArr && tagsArr.length ? {
