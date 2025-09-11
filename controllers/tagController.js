@@ -19,14 +19,24 @@ const createTag = async (req, res) => {
     const { name } = req.body;
 
     try {
-        const tag = await Tag.create({
+        const tag = await Tag.findFirst({
+            where: {
+                name
+            }
+        });
+
+        if (tag) {
+            return res.status(400).json({ message: "Tag already exists"});
+        }
+        
+        const createdTag = await Tag.create({
             data: {
                 name,
                 userId: req.user.userId
             }
         });
 
-        res.status(201).json({ message: "Tag created", tag });
+        res.status(201).json({ message: "Tag created", tag: createdTag });
     } catch (error) {
         console.error(error);
         res.status(500).json({ errors: [{ message: "Internal Server Error" }] });

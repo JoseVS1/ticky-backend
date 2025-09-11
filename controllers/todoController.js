@@ -49,17 +49,53 @@ const getTodo = async (req, res) => {
 };
 
 const createTodo = async (req, res) => {
-    const { title, description } = req.body;
+    const { title, description, tags } = req.body;
+    let tagsArr;
+
+    if (tags !== undefined) {
+        if (!Array.isArray(tags)) {
+            return res.status(400).json({ errors: [{ message: "Tags must be an array of integers" }] });
+        }
+
+        for (let i = 0; i < tags.length; i++) {
+            if (tags[i] !== "") {
+                const tag = await Tag.findUnique({
+                where: {
+                    id: Number(tags[i])
+                }
+                });
+
+                if (!tag) {
+                    return res.status(404).json({ errors: [{ message: "Tag not found" }] });
+                }
+
+                if (tag.userId !== req.user.userId) {
+                    return res.status(403).json({ errors: [{ message: "Forbidden"}] });
+                }
+            }
+        };
+
+        tagsArr = tags.filter(tag => tag && tag.trim() !== "").map(tag => ({ id: Number(tag) }));
+    }
 
     try {
-        const todo = await Todo.create({
+         const todo = await Todo.create({
             data: {
                 title,
                 ...(description && { description }),
-                userId: req.user.userId
+                userId: req.user.userId,
+                ...(tagsArr && tagsArr.length ? {
+                    tags: {
+                        connect: tagsArr
+                    }
+                } : {})
+            },
+            include: {
+                tags: true
             }
         });
 
+        console.log(todo)
         res.status(201).json({ message: "Todo created", todo });
     } catch (error) {
         console.error(error);
@@ -84,7 +120,7 @@ const updateTodo = async (req, res) => {
         for (let i = 0; i < tags.length; i++) {
             const tag = await Tag.findUnique({
                 where: {
-                    id: tags[i]
+                    id: Number(tags[i])
                 }
             });
 
@@ -98,8 +134,10 @@ const updateTodo = async (req, res) => {
         };
 
         tagsArr = tags.map(tag => (
-            { id: tag }
+            { id: Number(tag) }
         ));
+
+        console.log(tagsArr)
     }
     
     try {
