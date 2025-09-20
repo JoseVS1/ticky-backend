@@ -29,7 +29,11 @@ const getUser = async (req, res) => {
                 id: true,
                 email: true,
                 name: true,
-                todos: true,
+                todos: {
+                    include: {
+                        tags: true
+                    }
+                },
                 tags: true
             }
         });

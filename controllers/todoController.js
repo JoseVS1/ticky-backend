@@ -95,7 +95,6 @@ const createTodo = async (req, res) => {
             }
         });
 
-        console.log(todo)
         res.status(201).json({ message: "Todo created", todo });
     } catch (error) {
         console.error(error);
@@ -136,8 +135,6 @@ const updateTodo = async (req, res) => {
         tagsArr = tags.map(tag => (
             { id: Number(tag) }
         ));
-
-        console.log(tagsArr)
     }
     
     try {
