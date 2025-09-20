@@ -27,7 +27,7 @@ const signup = async (req, res) => {
             }
         });
 
-        const accessToken = jwt.sign({ userId: user.id }, process.env.SECRET, { expiresIn: "1h" });
+        const accessToken = jwt.sign({ userId: user.id }, process.env.SECRET, { expiresIn: "10m" });
         const refreshToken = jwt.sign({ userId: user.id }, process.env.REFRESH_SECRET, { expiresIn: "7d" });
 
         await User.update({
@@ -70,7 +70,7 @@ const login = async (req, res) => {
             return res.status(401).json({ errors: [{ message: "Invalid credentials" }]});
         }
 
-        const accessToken = jwt.sign({ userId: user.id }, process.env.SECRET, { expiresIn: "5s" });
+        const accessToken = jwt.sign({ userId: user.id }, process.env.SECRET, { expiresIn: "10m" });
         const refreshToken = jwt.sign({ userId: user.id }, process.env.REFRESH_SECRET, { expiresIn: "7d" });
 
         await User.update({
