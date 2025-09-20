@@ -123,11 +123,7 @@ const updateTodo = async (req, res) => {
                 }
             });
 
-            if (!tag) {
-                return res.status(404).json({ errors: [{ message: "Tag not found" }] });
-            }
-
-            if (tag.userId !== req.user.userId) {
+            if (tag && tag.userId !== req.user.userId) {
                 return res.status(403).json({ errors: [{ message: "Forbidden"}] });
             }
         };
@@ -135,6 +131,8 @@ const updateTodo = async (req, res) => {
         tagsArr = tags.map(tag => (
             { id: Number(tag) }
         ));
+
+        tagsArr = tagsArr.filter(tag => tag.id !== 0);
     }
     
     try {
@@ -153,26 +151,18 @@ const updateTodo = async (req, res) => {
         }
 
         const updatedTodo = await Todo.update({
-            where: {
-                id
-            },
+            where: { id },
             data: {
                 title,
                 ...(description && { description }),
                 status,
-                ...(tagsArr && tagsArr.length ? {
-                    tags: {
-                        connect: tagsArr
-                    }
-                } : {
-                    tags: {
-                        set: []
-                    }
-                })
+                ...(tags !== undefined
+                    ? (tagsArr.length
+                        ? { tags: { set: tagsArr } }
+                        : { tags: { set: [] } })
+                    : {})
             },
-            include: {
-                tags: true
-            }
+            include: { tags: true }
         });
 
         res.status(200).json({ message: "Todo updated", todo: updatedTodo });
