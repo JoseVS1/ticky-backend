@@ -49,7 +49,7 @@ const getTodo = async (req, res) => {
 };
 
 const createTodo = async (req, res) => {
-    const { title, description, tags } = req.body;
+    const { title, description, priority, tags } = req.body;
     let tagsArr;
 
     if (tags !== undefined) {
@@ -84,6 +84,7 @@ const createTodo = async (req, res) => {
                 title,
                 ...(description && { description }),
                 userId: req.user.userId,
+                priority,
                 ...(tagsArr && tagsArr.length ? {
                     tags: {
                         connect: tagsArr
@@ -104,7 +105,7 @@ const createTodo = async (req, res) => {
 
 const updateTodo = async (req, res) => {
     const id = Number(req.params.id);
-    const { title, description, status, tags } = req.body;
+    const { title, description, status, priority, tags } = req.body;
     let tagsArr;
 
     if (!Object.values(TodoStatus).includes(status)) {
@@ -156,6 +157,7 @@ const updateTodo = async (req, res) => {
                 title,
                 ...(description && { description }),
                 status,
+                priority,
                 ...(tags !== undefined
                     ? (tagsArr.length
                         ? { tags: { set: tagsArr } }
