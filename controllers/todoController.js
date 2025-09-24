@@ -1,6 +1,7 @@
 const Todo = require("../models/PrismaClient").todo;
 const Tag = require("../models/PrismaClient").tag;
 const TodoStatus = require("../models/TodoStatus");
+const toDatetimeLocal = require("../helpers/toDatetimeLocal");
 
 const getTodos = async (req, res) => {
     try {
@@ -49,7 +50,7 @@ const getTodo = async (req, res) => {
 };
 
 const createTodo = async (req, res) => {
-    const { title, description, priority, tags } = req.body;
+    const { title, description, priority, dueDate, tags } = req.body;
     let tagsArr;
 
     if (tags !== undefined) {
@@ -85,6 +86,7 @@ const createTodo = async (req, res) => {
                 ...(description && { description }),
                 userId: req.user.userId,
                 priority,
+                ...(dueDate && { dueDate: new Date(dueDate) }),
                 ...(tagsArr && tagsArr.length ? {
                     tags: {
                         connect: tagsArr
@@ -105,7 +107,7 @@ const createTodo = async (req, res) => {
 
 const updateTodo = async (req, res) => {
     const id = Number(req.params.id);
-    const { title, description, status, priority, tags } = req.body;
+    const { title, description, status, priority, dueDate, tags } = req.body;
     let tagsArr;
 
     if (!Object.values(TodoStatus).includes(status)) {
@@ -158,6 +160,7 @@ const updateTodo = async (req, res) => {
                 ...(description && { description }),
                 status,
                 priority,
+                ...(dueDate && { dueDate: new Date(dueDate) }),
                 ...(tags !== undefined
                     ? (tagsArr.length
                         ? { tags: { set: tagsArr } }
